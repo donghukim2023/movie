@@ -3,7 +3,7 @@ apiVersion: apps/v1
 metadata:
   name: springboot-movie-people-api
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: springboot-movie-people-api
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: springboot-movie-people-api
-        image: yny.ocir.io/axiffngjdqvm/movie/springboot-movie-people-api:{이니셜}
+        image: dandonghukim/springboot-movie-people-api:latest
         imagePullPolicy: Always
         ports:
         - name: http
@@ -46,26 +46,15 @@ spec:
             secretKeyRef:
               name: moviedb-secret
               key: password
-      imagePullSecrets:
-        - name: ocirsecret
 ---
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
-  name: springboot-movie-people-api
-  labels:
-    app: springboot-movie-people-api
-  annotations:
-    oci.oraclecloud.com/load-balancer-type: "lb"
-    service.beta.kubernetes.io/oci-load-balancer-internal: "true"
-    service.beta.kubernetes.io/oci-load-balancer-shape: "flexible"
-    service.beta.kubernetes.io/oci-load-balancer-shape-flex-min: "10"
-    service.beta.kubernetes.io/oci-load-balancer-shape-flex-max: "100"
+  name: springboot-movie-people-api-svc
 spec:
-  ports:
-  - port: 31000
-    targetPort: 8080
-    name: http
   selector:
     app: springboot-movie-people-api
-  type: LoadBalancer
+  ports:
+    - port: 31000
+      targetPort: 8080
+  type: ClusterIP
